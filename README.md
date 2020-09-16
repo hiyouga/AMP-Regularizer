@@ -1,6 +1,6 @@
 # Adversarial Model Perturbation (AMP)
 
-Code for reproducing AMP results.
+Code for reproducing AMP results. Since the blind review policy and the maximum size of appendix, we are unable to include the IMDB, Yelp2013, Yelp2014 dataset even they are publicly available on the Internet.
 
 ## Requirement
 
