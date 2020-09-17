@@ -53,6 +53,12 @@ python main.py --dataset svhn --model preactresnet18 --optimizer sgd --lr 0.1 --
 python main.py --dataset svhn --model preactresnet18 --optimizer sgd --lr 0.1 --method mixup --mixup_alpha 1.0 1.0
 ```
 
+#### Adversarial Training
+
+```bash
+python main.py --dataset svhn --model preactresnet18 --optimizer sgd --lr 0.1 --method adv --adv_eps 1
+```
+
 #### RMP
 
 ```bash
@@ -97,6 +103,11 @@ python main.py --dataset cifar10 --model preactresnet18 --optimizer sgd --lr 0.1
 python main.py --dataset cifar10 --model preactresnet18 --optimizer sgd --lr 0.1 --method mixup --mixup_alpha 1.0 1.0
 ```
 
+#### Adversarial Training
+
+```bash
+python main.py --dataset cifar10 --model preactresnet18 --optimizer sgd --lr 0.1 --method adv --adv_eps 1
+```
 #### RMP
 
 ```bash
@@ -140,6 +151,12 @@ python main.py --dataset cifar100 --model preactresnet18 --optimizer sgd --lr 0.
 
 ```bash
 python main.py --dataset cifar100 --model preactresnet18 --optimizer sgd --lr 0.1 --method mixup --mixup_alpha 1.0 1.0
+```
+
+#### Adversarial Training
+
+```bash
+python main.py --dataset cifar100 --model preactresnet18 --optimizer sgd --lr 0.1 --method adv --adv_eps 1
 ```
 
 #### RMP
@@ -186,6 +203,12 @@ python main.py --dataset svhn --model vgg16 --optimizer sgd --lr 0.1 --method ba
 python main.py --dataset svhn --model vgg16 --optimizer sgd --lr 0.1 --method mixup --mixup_alpha 1.0 1.0
 ```
 
+#### Adversarial Training
+
+```bash
+python main.py --dataset svhn --model vgg16 --optimizer sgd --lr 0.1 --method adv --adv_eps 1
+```
+
 #### RMP
 
 ```bash
@@ -228,6 +251,12 @@ python main.py --dataset cifar10 --model vgg16 --optimizer sgd --lr 0.1 --method
 
 ```bash
 python main.py --dataset cifar10 --model vgg16 --optimizer sgd --lr 0.1 --method mixup --mixup_alpha 1.0 1.0
+```
+
+#### Adversarial Training
+
+```bash
+python main.py --dataset cifar10 --model vgg16 --optimizer sgd --lr 0.1 --method adv --adv_eps 1
 ```
 
 #### RMP
@@ -275,6 +304,11 @@ python main.py --dataset cifar100 --model vgg16 --optimizer sgd --lr 0.1 --metho
 python main.py --dataset cifar100 --model vgg16 --optimizer sgd --lr 0.1 --method mixup --mixup_alpha 1.0 1.0
 ```
 
+#### Adversarial Training
+
+```bash
+python main.py --dataset cifar100 --model vgg16 --optimizer sgd --lr 0.1 --method adv --adv_eps 1
+```
 #### RMP
 
 ```bash
@@ -317,6 +351,12 @@ python main.py --dataset imdb --model textcnn --optimizer adam --lr 0.001 --meth
 
 ```bash
 python main.py --dataset imdb --model textcnn --optimizer adam --lr 0.001 --method mixup --mixup_alpha 1.0 1.0
+```
+
+#### Adversarial Training
+
+```bash
+python main.py --dataset imdb --model textcnn --optimizer adam --lr 0.001 --method textadv --adv_eps 1
 ```
 
 #### RMP
@@ -369,6 +409,12 @@ python main.py --dataset yelp13 --model textcnn --optimizer adam --lr 0.001 --me
 python main.py --dataset yelp13 --model textcnn --optimizer adam --lr 0.001 --method mixup --mixup_alpha 1.0 1.0
 ```
 
+#### Adversarial Training
+
+```bash
+python main.py --dataset yelp13 --model textcnn --optimizer adam --lr 0.001 --method textadv --adv_eps 1
+```
+
 #### RMP
 
 ```bash
@@ -417,6 +463,12 @@ python main.py --dataset yelp14 --model textcnn --optimizer adam --lr 0.001 --me
 
 ```bash
 python main.py --dataset yelp14 --model textcnn --optimizer adam --lr 0.001 --method mixup --mixup_alpha 1.0 1.0
+```
+
+#### Adversarial Training
+
+```bash
+python main.py --dataset yelp14 --model textcnn --optimizer adam --lr 0.001 --method textadv --adv_eps 1
 ```
 
 #### RMP
