@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import numpy as np
-from attacks import proj, pgd
+from attacks import pgd
 from loss_func import CrossEntropyLoss
 
 
@@ -12,7 +12,6 @@ class Trainer:
             'base': self._train_base,
             'mixup': self._train_mixup,
             'adv': self._train_adv,
-            'textadv': self._train_textadv,
             'rmp': self._train_rmp,
             'amp': self._train_amp
         }
@@ -20,7 +19,6 @@ class Trainer:
             'base': self._init_perturbation_default,
             'mixup': self._init_perturbation_default,
             'adv': self._init_perturbation_default,
-            'textadv': self._init_perturbation_default,
             'rmp': self._init_perturbation_default,
             'amp': self._init_perturbation_default
         }
@@ -28,7 +26,6 @@ class Trainer:
             'base': None,
             'mixup': None,
             'adv': None,
-            'textadv': None,
             'rmp': self._reset_perturbation_rmp,
             'amp': self._reset_perturbation_amp
         }
@@ -36,7 +33,6 @@ class Trainer:
             'base': self._update_params_default,
             'mixup': self._update_params_default,
             'adv': self._update_params_default,
-            'textadv': self._update_params_default,
             'rmp': self._update_params_train_amp,
             'amp': self._update_params_train_amp
         }
@@ -44,7 +40,6 @@ class Trainer:
             'base': self._update_params_default,
             'mixup': self._update_params_default,
             'adv': self._update_params_default,
-            'textadv': self._update_params_default,
             'rmp': self._update_params_default,
             'amp': self._update_params_default
         }
@@ -52,7 +47,6 @@ class Trainer:
             'base': None,
             'mixup': None,
             'adv': None,
-            'textadv': None,
             'rmp': None,
             'amp': self._update_delta_amp
         }
@@ -60,7 +54,6 @@ class Trainer:
             'base': self._update_theta_default,
             'mixup': self._update_theta_default,
             'adv': self._update_theta_default,
-            'textadv': self._update_theta_default,
             'rmp': self._update_theta_default,
             'amp': self._update_theta_default,
         }
@@ -93,22 +86,16 @@ class Trainer:
         self._init_perturbation()
         _original_params = filter(lambda p: p.requires_grad, self.model.original_params.parameters())
         _perturb_params = filter(lambda p: p.requires_grad, self.model.perturb_params.parameters())
-        if args.optimizer == 'sgd':
-            self.optimizer = torch.optim.SGD(_original_params,
-                                             lr=args.lr,
-                                             momentum=args.momentum,
-                                             weight_decay=args.decay,
-                                             nesterov=False)
-            self.nested_optimizer = torch.optim.SGD(_perturb_params,
-                                                    lr=args.inner_lr,
-                                                    momentum=0,
-                                                    weight_decay=0,
-                                                    nesterov=False)
-        elif args.optimizer == 'adam':
-            self.optimizer = torch.optim.Adam(_original_params, lr=args.lr, weight_decay=args.decay)
-            self.nested_optimizer = torch.optim.Adam(_perturb_params, lr=args.lr, weight_decay=args.decay)
-        else:
-            raise Exception
+        self.optimizer = torch.optim.SGD(_original_params,
+                                         lr=args.lr,
+                                         momentum=args.momentum,
+                                         weight_decay=args.decay,
+                                         nesterov=True)
+        self.nested_optimizer = torch.optim.SGD(_perturb_params,
+                                                lr=args.inner_lr,
+                                                momentum=0,
+                                                weight_decay=0,
+                                                nesterov=True)
 
     def evaluate(self, inputs, targets):
         self._update_params_eval()
@@ -151,22 +138,6 @@ class Trainer:
         inputs_adv = pgd(self, inputs, targets, self._adv_params, mode='train')
         outputs = self.model(inputs_adv)
         loss = self.criterion(outputs, targets)
-        loss.backward()
-        self._update_theta()
-        self.optimizer.step()
-        return outputs, loss
-
-    def _train_textadv(self, inputs, targets):
-        self._update_params_train()
-        self.optimizer.zero_grad()
-        self.model.perturb_modules.zero_grad()
-        outputs, embedding = self.model(inputs, adv=True)
-        loss = self.criterion(outputs, targets)
-        embedding_grad = torch.autograd.grad(loss, embedding, retain_graph=True, only_inputs=True)[0]
-        embedding_adv = proj(embedding_grad.data, torch.zeros_like(embedding_grad.data), self._adv_params['eps'], 'l2')
-        adv_outputs = self.model(inputs, perturbation=embedding_adv)
-        adv_loss = self.criterion(adv_outputs, targets)
-        loss += adv_loss
         loss.backward()
         self._update_theta()
         self.optimizer.step()

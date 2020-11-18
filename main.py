@@ -4,7 +4,7 @@ import torch
 import models
 import argparse
 from trainer import Trainer
-from data_utils import load_cv_data, load_nlp_data
+from data_utils import load_data
 
 
 class Instructor:
@@ -12,14 +12,17 @@ class Instructor:
     def __init__(self, args):
         self.args = args
         self._print_args()
-        if self.args.dataset in ['imdb', 'yelp13', 'yelp14']:
-            self.train_dataloader, self.test_dataloader, tokenizer = load_nlp_data(batch_size=self.args.batch_size, workers=0, dataset=self.args.dataset, data_target_dir=os.path.join(self.args.data_dir, self.args.dataset))
-            print(f"=> creating model {self.args.model}")
-            model = models.__dict__[self.args.model](num_classes=self.args.num_classes, dropout=self.args.dropout, scales=self.args.scales, tokenizer=tokenizer)
-        else:
-            self.train_dataloader, self.test_dataloader = load_cv_data(data_aug=(self.args.no_data_aug==False), batch_size=self.args.batch_size, workers=0, dataset=self.args.dataset, data_target_dir=os.path.join(self.args.data_dir, self.args.dataset))
-            print(f"=> creating model {self.args.model}")
-            model = models.__dict__[self.args.model](num_classes=self.args.num_classes, dropout=self.args.dropout, scales=self.args.scales)
+        self.train_dataloader, self.test_dataloader = load_data(batch_size=self.args.batch_size,
+                                                                workers=0,
+                                                                dataset=self.args.dataset,
+                                                                data_target_dir=os.path.join(self.args.data_dir, self.args.dataset),
+                                                                data_aug=(self.args.no_data_aug==False),
+                                                                cutout=self.args.cutout,
+                                                                autoaug=self.args.autoaug)
+        print(f"=> creating model {self.args.model}")
+        model = models.__dict__[self.args.model](num_classes=self.args.num_classes,
+                                                 dropout=self.args.dropout,
+                                                 scales=self.args.scales)
         self.trainer = Trainer(model, self.args)
         self.trainer.model.to(self.args.device)
         if self.args.device.type == 'cuda':
@@ -75,8 +78,7 @@ class Instructor:
     def run(self):
         best_val_loss, best_top1_acc = 0, 0
         for epoch in range(self.args.num_epoch):
-            if self.args.optimizer == 'sgd':
-                self._adjust_lr(epoch)
+            self._adjust_lr(epoch)
             train_loss, train_top1_acc = self._train(self.train_dataloader)
             val_loss, val_top1_acc = self._validate(self.test_dataloader)
             if val_top1_acc > best_top1_acc or (val_top1_acc == best_top1_acc and val_loss < best_val_loss):
@@ -91,15 +93,16 @@ class Instructor:
 if __name__ == '__main__':
 
     model_names = sorted(name for name in models.__dict__ if name.islower() and not name.startswith('__') and callable(models.__dict__[name]))
-    method_names = ['base', 'mixup', 'adv', 'textadv', 'rmp', 'amp']
-    num_classes = {'svhn': 10, 'cifar10': 10, 'cifar100': 100, 'imdb': 10, 'yelp13': 5, 'yelp14': 5}
+    method_names = ['base', 'mixup', 'adv', 'rmp', 'amp']
+    num_classes = {'svhn': 10, 'cifar10': 10, 'cifar100': 100}
     parser = argparse.ArgumentParser(description='Trainer', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--dataset', type=str, default='cifar10', choices=list(num_classes.keys()), help='Dataset name.')
     parser.add_argument('--data_dir', type=str, default='data', help='Dictionary for dataset.')
     parser.add_argument('--no_data_aug', default=False, action='store_true', help='Disable data augmentation.')
+    parser.add_argument('--cutout', default=False, action='store_true', help='Enable Cutout augmentation.')
+    parser.add_argument('--autoaug', default=False, action='store_true', help='Enable AutoAugment.')
     parser.add_argument('--model', default='preactresnet18', choices=model_names, help='Model architecture.')
     parser.add_argument('--method', type=str, default='base', choices=method_names, help='Training method.')
-    parser.add_argument('--optimizer', type=str, default='sgd', choices=['sgd', 'adam'], help='Choice of optimizer.')
     parser.add_argument('--num_epoch', type=int, default=200, help='Number of epochs to train.')
     parser.add_argument('--batch_size', type=int, default=50, help='Batch size.')
     parser.add_argument('--lr', type=float, default=0.1, help='Global learning rate.')
