@@ -1,6 +1,6 @@
 # Adversarial Model Perturbation (AMP)
 
-Code for reproducing AMP results. Since the blind review policy and the maximum size of appendix, we are unable to include the IMDB, Yelp2013, Yelp2014 dataset even they are publicly available on the Internet.
+Code for reproducing AMP results.
 
 ## Requirement
 
@@ -8,6 +8,7 @@ Code for reproducing AMP results. Since the blind review policy and the maximum 
 - Torch 1.6.0
 - TorchVision 0.7.0
 - NumPy 1.18.5
+- Pillow 6.1.0
 
 ## Installation
 
@@ -19,7 +20,7 @@ conda activate amp
 pip install -r requirements.txt
 ```
 
-## Usage
+## Baseline comparison
 
 ### How to run experiments for PreActResNet18 on SVHN
 
@@ -321,170 +322,256 @@ python main.py --dataset cifar100 --model vgg16 --optimizer sgd --lr 0.1 --metho
 python main.py --dataset cifar100 --model vgg16 --optimizer sgd --lr 0.1 --method amp --epsilon 0.1 --inner_lr 0.2 --inner_iter 1
 ```
 
-### How to run experiments for TextCNN on IMDB
+## Use data augmentation
+
+### How to run experiments for WideResNet-28-10 on SVHN with vanilla augmentation
 
 #### ERM
 
 ```bash
-python main.py --dataset imdb --model textcnn --optimizer adam --lr 0.001 --method base
-```
-
-#### Dropout
-
-```bash
-python main.py --dataset imdb --model textcnn --optimizer adam --lr 0.001 --method base --dropout 0.5
-```
-
-#### Label smoothing
-
-```bash
-python main.py --dataset imdb --model textcnn --optimizer adam --lr 0.001 --method base --smoothing 0.2
-```
-
-#### Flooding
-
-```bash
-python main.py --dataset imdb --model textcnn --optimizer adam --lr 0.001 --method base --flooding 0.02
-```
-
-#### MixUp
-
-```bash
-python main.py --dataset imdb --model textcnn --optimizer adam --lr 0.001 --method mixup --mixup_alpha 1.0 1.0
-```
-
-#### Adversarial Training
-
-```bash
-python main.py --dataset imdb --model textcnn --optimizer adam --lr 0.001 --method textadv --adv_eps 1
-```
-
-#### RMP
-
-```bash
-python main.py --dataset imdb --model textcnn --optimizer adam --lr 0.001 --method rmp --epsilon 0.1
+python main.py --dataset svhn --model wrn28_10 --optimizer sgd --lr 0.1 --method base
 ```
 
 #### AMP
 
 ```bash
-python main.py --dataset imdb --model textcnn --optimizer adam --lr 0.001 --method amp --epsilon 1 --inner_lr 0.1 --inner_iter 1
+python main.py --dataset svhn --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.5 --inner_lr 1 --inner_iter 1
 ```
 
-#### AMP+Dropout
-
-```bash
-python main.py --dataset imdb --model textcnn --optimizer adam --lr 0.001 --method amp --dropout 0.5 --epsilon 1 --inner_lr 0.1 --inner_iter 1
-```
-
-### How to run experiments for TextCNN on Yelp2013
+### How to run experiments for WideResNet-28-10 on SVHN with Cutout augmentation
 
 #### ERM
 
 ```bash
-python main.py --dataset yelp13 --model textcnn --optimizer adam --lr 0.001 --method base
-```
-
-#### Dropout
-
-```bash
-python main.py --dataset yelp13 --model textcnn --optimizer adam --lr 0.001 --method base --dropout 0.5
-```
-
-#### Label smoothing
-
-```bash
-python main.py --dataset yelp13 --model textcnn --optimizer adam --lr 0.001 --method base --smoothing 0.2
-```
-
-#### Flooding
-
-```bash
-python main.py --dataset yelp13 --model textcnn --optimizer adam --lr 0.001 --method base --flooding 0.02
-```
-
-#### MixUp
-
-```bash
-python main.py --dataset yelp13 --model textcnn --optimizer adam --lr 0.001 --method mixup --mixup_alpha 1.0 1.0
-```
-
-#### Adversarial Training
-
-```bash
-python main.py --dataset yelp13 --model textcnn --optimizer adam --lr 0.001 --method textadv --adv_eps 1
-```
-
-#### RMP
-
-```bash
-python main.py --dataset yelp13 --model textcnn --optimizer adam --lr 0.001 --method rmp --epsilon 0.1
+python main.py --dataset svhn --model wrn28_10 --optimizer sgd --lr 0.1 --method base --cutout
 ```
 
 #### AMP
 
 ```bash
-python main.py --dataset yelp13 --model textcnn --optimizer adam --lr 0.001 --method amp --epsilon 1 --inner_lr 0.1 --inner_iter 1
+python main.py --dataset svhn --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.3 --inner_lr 0.5 --inner_iter 1 --cutout
 ```
 
-#### AMP+Dropout
-
-```bash
-python main.py --dataset yelp13 --model textcnn --optimizer adam --lr 0.001 --method amp --dropout 0.5 --epsilon 1 --inner_lr 0.1 --inner_iter 1
-```
-
-### How to run experiments for TextCNN on Yelp2014
+### How to run experiments for WideResNet-28-10 on SVHN with AutoAugment augmentation
 
 #### ERM
 
 ```bash
-python main.py --dataset yelp14 --model textcnn --optimizer adam --lr 0.001 --method base
-```
-
-#### Dropout
-
-```bash
-python main.py --dataset yelp14 --model textcnn --optimizer adam --lr 0.001 --method base --dropout 0.5
-```
-
-#### Label smoothing
-
-```bash
-python main.py --dataset yelp14 --model textcnn --optimizer adam --lr 0.001 --method base --smoothing 0.2
-```
-
-#### Flooding
-
-```bash
-python main.py --dataset yelp14 --model textcnn --optimizer adam --lr 0.001 --method base --flooding 0.02
-```
-
-#### MixUp
-
-```bash
-python main.py --dataset yelp14 --model textcnn --optimizer adam --lr 0.001 --method mixup --mixup_alpha 1.0 1.0
-```
-
-#### Adversarial Training
-
-```bash
-python main.py --dataset yelp14 --model textcnn --optimizer adam --lr 0.001 --method textadv --adv_eps 1
-```
-
-#### RMP
-
-```bash
-python main.py --dataset yelp14 --model textcnn --optimizer adam --lr 0.001 --method rmp --epsilon 0.1
+python main.py --dataset svhn --model wrn28_10 --optimizer sgd --lr 0.1 --method base --autoaug
 ```
 
 #### AMP
 
 ```bash
-python main.py --dataset yelp14 --model textcnn --optimizer adam --lr 0.001 --method amp --epsilon 1 --inner_lr 0.1 --inner_iter 1
+python main.py --dataset svhn --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.1 --inner_lr 0.1 --inner_iter 1 --autoaug
 ```
 
-#### AMP+Dropout
+### How to run experiments for WideResNet-28-10 on CIFAR-10 with vanilla augmentation
+
+#### ERM
 
 ```bash
-python main.py --dataset yelp14 --model textcnn --optimizer adam --lr 0.001 --method amp --dropout 0.5 --epsilon 1 --inner_lr 0.1 --inner_iter 1
+python main.py --dataset cifar10 --model wrn28_10 --optimizer sgd --lr 0.1 --method base
+```
+
+#### AMP
+
+```bash
+python main.py --dataset cifar10 --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.5 --inner_lr 1 --inner_iter 1
+```
+
+### How to run experiments for WideResNet-28-10 on CIFAR-10 with Cutout augmentation
+
+#### ERM
+
+```bash
+python main.py --dataset cifar10 --model wrn28_10 --optimizer sgd --lr 0.1 --method base --cutout
+```
+
+#### AMP
+
+```bash
+python main.py --dataset cifar10 --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.3 --inner_lr 0.5 --inner_iter 1 --cutout
+```
+
+### How to run experiments for WideResNet-28-10 on CIFAR-10 with AutoAugment augmentation
+
+#### ERM
+
+```bash
+python main.py --dataset cifar10 --model wrn28_10 --optimizer sgd --lr 0.1 --method base --autoaug
+```
+
+#### AMP
+
+```bash
+python main.py --dataset cifar10 --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.1 --inner_lr 0.1 --inner_iter 1 --autoaug
+```
+
+### How to run experiments for WideResNet-28-10 on CIFAR-100 with vanilla augmentation
+
+#### ERM
+
+```bash
+python main.py --dataset cifar100 --model wrn28_10 --optimizer sgd --lr 0.1 --method base
+```
+
+#### AMP
+
+```bash
+python main.py --dataset cifar100 --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.5 --inner_lr 1 --inner_iter 1
+```
+
+### How to run experiments for WideResNet-28-10 on CIFAR-100 with Cutout augmentation
+
+#### ERM
+
+```bash
+python main.py --dataset cifar100 --model wrn28_10 --optimizer sgd --lr 0.1 --method base --cutout
+```
+
+#### AMP
+
+```bash
+python main.py --dataset cifar100 --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.3 --inner_lr 0.5 --inner_iter 1 --cutout
+```
+
+### How to run experiments for WideResNet-28-10 on CIFAR-100 with AutoAugment augmentation
+
+#### ERM
+
+```bash
+python main.py --dataset cifar100 --model wrn28_10 --optimizer sgd --lr 0.1 --method base --autoaug
+```
+
+#### AMP
+
+```bash
+python main.py --dataset cifar100 --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.1 --inner_lr 0.1 --inner_iter 1 --autoaug
+```
+
+### How to run experiments for PyramidNet-164-270 on SVHN with vanilla augmentation
+
+#### ERM
+
+```bash
+python main.py --dataset svhn --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base
+```
+
+#### AMP
+
+```bash
+python main.py --dataset svhn --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.5 --inner_lr 1 --inner_iter 1
+```
+
+### How to run experiments for PyramidNet-164-270 on SVHN with Cutout augmentation
+
+#### ERM
+
+```bash
+python main.py --dataset svhn --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base --cutout
+```
+
+#### AMP
+
+```bash
+python main.py --dataset svhn --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.3 --inner_lr 0.5 --inner_iter 1 --cutout
+```
+
+### How to run experiments for PyramidNet-164-270 on SVHN with AutoAugment augmentation
+
+#### ERM
+
+```bash
+python main.py --dataset svhn --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base --autoaug
+```
+
+#### AMP
+
+```bash
+python main.py --dataset svhn --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.1 --inner_lr 0.1 --inner_iter 1 --autoaug
+```
+
+### How to run experiments for PyramidNet-164-270 on CIFAR-10 with vanilla augmentation
+
+#### ERM
+
+```bash
+python main.py --dataset cifar10 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base
+```
+
+#### AMP
+
+```bash
+python main.py --dataset cifar10 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.5 --inner_lr 1 --inner_iter 1
+```
+
+### How to run experiments for PyramidNet-164-270 on CIFAR-10 with Cutout augmentation
+
+#### ERM
+
+```bash
+python main.py --dataset cifar10 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base --cutout
+```
+
+#### AMP
+
+```bash
+python main.py --dataset cifar10 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.3 --inner_lr 0.5 --inner_iter 1 --cutout
+```
+
+### How to run experiments for PyramidNet-164-270 on CIFAR-10 with AutoAugment augmentation
+
+#### ERM
+
+```bash
+python main.py --dataset cifar10 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base --autoaug
+```
+
+#### AMP
+
+```bash
+python main.py --dataset cifar10 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.1 --inner_lr 0.1 --inner_iter 1 --autoaug
+```
+
+### How to run experiments for PyramidNet-164-270 on CIFAR-100 with vanilla augmentation
+
+#### ERM
+
+```bash
+python main.py --dataset cifar100 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base
+```
+
+#### AMP
+
+```bash
+python main.py --dataset cifar100 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.5 --inner_lr 1 --inner_iter 1
+```
+
+### How to run experiments for PyramidNet-164-270 on CIFAR-100 with Cutout augmentation
+
+#### ERM
+
+```bash
+python main.py --dataset cifar100 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base --cutout
+```
+
+#### AMP
+
+```bash
+python main.py --dataset cifar100 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.3 --inner_lr 0.5 --inner_iter 1 --cutout
+```
+
+### How to run experiments for PyramidNet-164-270 on CIFAR-100 with AutoAugment augmentation
+
+#### ERM
+
+```bash
+python main.py --dataset cifar100 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base --autoaug
+```
+
+#### AMP
+
+```bash
+python main.py --dataset cifar100 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.1 --inner_lr 0.1 --inner_iter 1 --autoaug
 ```

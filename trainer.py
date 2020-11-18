@@ -95,7 +95,7 @@ class Trainer:
                                                 lr=args.inner_lr,
                                                 momentum=0,
                                                 weight_decay=0,
-                                                nesterov=True)
+                                                nesterov=False)
 
     def evaluate(self, inputs, targets):
         self._update_params_eval()

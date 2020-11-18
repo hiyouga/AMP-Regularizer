@@ -6,7 +6,7 @@ from torchvision import datasets, transforms
 from PIL import Image, ImageEnhance, ImageOps
 
 
-def load_cv_data(batch_size, workers, dataset, data_target_dir, data_aug, cutout, autoaug):
+def load_data(batch_size, workers, dataset, data_target_dir, data_aug, cutout, autoaug):
     if dataset == 'cifar10':
         mean = [x / 255 for x in [125.3, 123.0, 113.9]]
         std = [x / 255 for x in [63.0, 62.1, 66.7]]
