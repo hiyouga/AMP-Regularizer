@@ -116,8 +116,8 @@ if __name__ == '__main__':
     parser.add_argument('--schedule', type=int, nargs='+', default=[100, 150], help='Decrease learning rate at these epochs.')
     parser.add_argument('--gammas', type=float, nargs='+', default=[0.1, 0.1], help='LR is multiplied by gamma on schedule, number of gammas should be equal to schedule')
     parser.add_argument('--inner_iter', type=int, default=1, help='Inner iteration number.')
-    parser.add_argument('--inner_lr', type=float, default=0.5, help='Inner learning rate.')
-    parser.add_argument('--epsilon', type=float, default=1, help='Perturbation norm constraint.')
+    parser.add_argument('--inner_lr', type=float, default=1, help='Inner learning rate.')
+    parser.add_argument('--epsilon', type=float, default=0.5, help='Perturbation norm constraint.')
     parser.add_argument('--scales', type=str, default='1,1,1,1,1,1', help='Scales of epsilon applied to different layer.')
     parser.add_argument('--constrain', type=str, default='l2', choices=['l2', 'linf'], help='Norm type for perturbations.')
     parser.add_argument('--adv_ei', type=int, default=1, help='Adversarial training step size.')
@@ -130,7 +130,5 @@ if __name__ == '__main__':
     args.scales = list(map(float, args.scales.split(',')))
     args.device = torch.device(args.device) if args.device else torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     assert len(args.gammas) == len(args.schedule)
-    if not os.path.exists('dats'):
-        os.mkdir('dats')
     ins = Instructor(args)
     ins.run()
