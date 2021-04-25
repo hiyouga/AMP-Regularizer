@@ -1,6 +1,22 @@
-# Adversarial Model Perturbation (AMP)
+# AMP-Regularizer
 
-Code for reproducing AMP results.
+![GitHub](https://img.shields.io/github/license/hiyouga/amp-regularizer)
+
+![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/regularizing-neural-networks-via-adversarial/image-classification-on-svhn)
+
+Code for our CVPR 2021 paper "Regularizing Neural Networks via Adversarial Model Perturbation".
+
+You can download the paper via: [[ArXiv]](https://arxiv.org/abs/2010.04925) [[PapersWithCode]](https://paperswithcode.com/paper/regularizing-neural-networks-via-adversarial).
+
+## One-Sentence Summary
+
+Adversarial Model Perturbation (AMP) effectively improves the generalization performance of deep models by minimizing an "AMP loss" that can find flat local minima via applying a "worst" norm-bounded perturbation on the model parameter.
+
+![method](assets/method.jpg)
+
+## Abstract
+
+Effective regularization techniques are highly desired in deep learning for alleviating overfitting and improving generalization. This work proposes a new regularization scheme, based on the understanding that the flat local minima of the empirical risk cause the model to generalize better. This scheme is referred to as adversarial model perturbation (AMP), where instead of directly minimizing the empirical risk, an alternative "AMP loss" is minimized via SGD. Specifically, the AMP loss is obtained from the empirical risk by applying the "worst" norm-bounded perturbation on each point in the parameter space. Comparing with most existing regularization schemes, AMP has strong theoretical justifications, in that minimizing the AMP loss can be shown theoretically to favour flat local minima of the empirical risk. Extensive experiments on various modern deep architectures establish AMP as a new state of the art among regularization schemes. 
 
 ## Requirement
 
@@ -10,9 +26,15 @@ Code for reproducing AMP results.
 - NumPy 1.18.5
 - Pillow 6.1.0
 
-## Installation
+## Preparation
 
-An easy way to install this code with anaconda environment:
+### Clone
+
+```bash
+git clone https://github.com/**/***.git
+```
+
+### Create an anaconda environment [Optional]:
 
 ```bash
 conda create -n amp python=3.7
@@ -20,558 +42,100 @@ conda activate amp
 pip install -r requirements.txt
 ```
 
-## Baseline comparison
+## Usage
 
-### How to run experiments for PreActResNet18 on SVHN
+### Training
 
 #### ERM
 
 ```bash
-python main.py --dataset svhn --model preactresnet18 --optimizer sgd --lr 0.1 --method base
+python main.py --dataset [dataset] --model [architecture] --method base
 ```
 
 #### Dropout
 
 ```bash
-python main.py --dataset svhn --model preactresnet18 --optimizer sgd --lr 0.1 --method base --dropout 0.1
+python main.py --dataset [dataset] --model [architecture] --method base --dropout [drop_rate]
 ```
 
 #### Label smoothing
 
 ```bash
-python main.py --dataset svhn --model preactresnet18 --optimizer sgd --lr 0.1 --method base --smoothing 0.2
+python main.py --dataset [dataset] --model [architecture] --method base --smoothing [smoothing_coefficient]
 ```
 
 #### Flooding
 
 ```bash
-python main.py --dataset svhn --model preactresnet18 --optimizer sgd --lr 0.1 --method base --flooding 0.02
+python main.py --dataset [dataset] --model [architecture] --method base --flooding [flood_level]
 ```
 
 #### MixUp
 
 ```bash
-python main.py --dataset svhn --model preactresnet18 --optimizer sgd --lr 0.1 --method mixup --mixup_alpha 1.0 1.0
+python main.py --dataset [dataset] --model [architecture] --method mixup --mixup_alpha [mixup_alpha] [mixup_alpha]
 ```
 
 #### Adversarial Training
 
 ```bash
-python main.py --dataset svhn --model preactresnet18 --optimizer sgd --lr 0.1 --method adv --adv_eps 1
+python main.py --dataset [dataset] --model [architecture] --method adv --adv_eps [adv_eps] --adv_iter [adv_iter]
 ```
 
 #### RMP
 
 ```bash
-python main.py --dataset svhn --model preactresnet18 --optimizer sgd --lr 0.1 --method rmp --epsilon 0.1
+python main.py --dataset [dataset] --model [architecture] --method rmp --epsilon [epsilon]
 ```
 
 #### AMP
 
 ```bash
-python main.py --dataset svhn --model preactresnet18 --optimizer sgd --lr 0.1 --method amp --epsilon 0.5 --inner_lr 1 --inner_iter 1
+python main.py --dataset [dataset] --model [architecture] --method amp --epsilon [epsilon] --inner_lr [inner_lr] --inner_iter [inner_iter]
 ```
 
-### How to run experiments for PreActResNet18 on CIFAR-10
+#### AMP with Cutout
 
-#### ERM
-
-```bash
-python main.py --dataset cifar10 --model preactresnet18 --optimizer sgd --lr 0.1 --method base
-```
-
-#### Dropout
-
-```bash
-python main.py --dataset cifar10 --model preactresnet18 --optimizer sgd --lr 0.1 --method base --dropout 0.1
-```
-
-#### Label smoothing
-
-```bash
-python main.py --dataset cifar10 --model preactresnet18 --optimizer sgd --lr 0.1 --method base --smoothing 0.2
-```
-
-#### Flooding
-
-```bash
-python main.py --dataset cifar10 --model preactresnet18 --optimizer sgd --lr 0.1 --method base --flooding 0.02
-```
-
-#### MixUp
-
-```bash
-python main.py --dataset cifar10 --model preactresnet18 --optimizer sgd --lr 0.1 --method mixup --mixup_alpha 1.0 1.0
-```
-
-#### Adversarial Training
-
-```bash
-python main.py --dataset cifar10 --model preactresnet18 --optimizer sgd --lr 0.1 --method adv --adv_eps 1
-```
-#### RMP
-
-```bash
-python main.py --dataset cifar10 --model preactresnet18 --optimizer sgd --lr 0.1 --method rmp --epsilon 0.1
-```
-
-#### AMP
-
-```bash
-python main.py --dataset cifar10 --model preactresnet18 --optimizer sgd --lr 0.1 --method amp --epsilon 0.5 --inner_lr 1 --inner_iter 1
-```
-
-
-### How to run experiments for PreActResNet18 on CIFAR-100
-
-#### ERM
-
-```bash
-python main.py --dataset cifar100 --model preactresnet18 --optimizer sgd --lr 0.1 --method base
-```
-
-#### Dropout
-
-```bash
-python main.py --dataset cifar100 --model preactresnet18 --optimizer sgd --lr 0.1 --method base --dropout 0.1
-```
-
-#### Label smoothing
-
-```bash
-python main.py --dataset cifar100 --model preactresnet18 --optimizer sgd --lr 0.1 --method base --smoothing 0.2
-```
-
-#### Flooding
-
-```bash
-python main.py --dataset cifar100 --model preactresnet18 --optimizer sgd --lr 0.1 --method base --flooding 0.02
-```
-
-#### MixUp
-
-```bash
-python main.py --dataset cifar100 --model preactresnet18 --optimizer sgd --lr 0.1 --method mixup --mixup_alpha 1.0 1.0
-```
-
-#### Adversarial Training
-
-```bash
-python main.py --dataset cifar100 --model preactresnet18 --optimizer sgd --lr 0.1 --method adv --adv_eps 1
-```
-
-#### RMP
-
-```bash
-python main.py --dataset cifar100 --model preactresnet18 --optimizer sgd --lr 0.1 --method rmp --epsilon 0.1
-```
-
-#### AMP
-
-```bash
-python main.py --dataset cifar100 --model preactresnet18 --optimizer sgd --lr 0.1 --method amp --epsilon 0.5 --inner_lr 1 --inner_iter 1
-```
-
-### How to run experiments for VGG16 on SVHN
-
-#### ERM
-
-```bash
-python main.py --dataset svhn --model vgg16 --optimizer sgd --lr 0.1 --method base
-```
-
-#### Dropout
-
-```bash
-python main.py --dataset svhn --model vgg16 --optimizer sgd --lr 0.1 --method base --dropout 0.1
-```
-
-#### Label smoothing
-
-```bash
-python main.py --dataset svhn --model vgg16 --optimizer sgd --lr 0.1 --method base --smoothing 0.2
-```
-
-#### Flooding
-
-```bash
-python main.py --dataset svhn --model vgg16 --optimizer sgd --lr 0.1 --method base --flooding 0.02
-```
-
-#### MixUp
-
-```bash
-python main.py --dataset svhn --model vgg16 --optimizer sgd --lr 0.1 --method mixup --mixup_alpha 1.0 1.0
-```
-
-#### Adversarial Training
-
-```bash
-python main.py --dataset svhn --model vgg16 --optimizer sgd --lr 0.1 --method adv --adv_eps 1
-```
-
-#### RMP
-
-```bash
-python main.py --dataset svhn --model vgg16 --optimizer sgd --lr 0.1 --method rmp --epsilon 0.1
-```
-
-#### AMP
-
-```bash
-python main.py --dataset svhn --model vgg16 --optimizer sgd --lr 0.1 --method amp --epsilon 0.1 --inner_lr 0.2 --inner_iter 1
-```
-
-### How to run experiments for VGG16 on CIFAR-10
-
-#### ERM
-
-```bash
-python main.py --dataset cifar10 --model vgg16 --optimizer sgd --lr 0.1 --method base
-```
-
-#### Dropout
-
-```bash
-python main.py --dataset cifar10 --model vgg16 --optimizer sgd --lr 0.1 --method base --dropout 0.1
-```
-
-#### Label smoothing
-
-```bash
-python main.py --dataset cifar10 --model vgg16 --optimizer sgd --lr 0.1 --method base --smoothing 0.2
-```
-
-#### Flooding
-
-```bash
-python main.py --dataset cifar10 --model vgg16 --optimizer sgd --lr 0.1 --method base --flooding 0.02
-```
-
-#### MixUp
-
-```bash
-python main.py --dataset cifar10 --model vgg16 --optimizer sgd --lr 0.1 --method mixup --mixup_alpha 1.0 1.0
-```
-
-#### Adversarial Training
-
-```bash
-python main.py --dataset cifar10 --model vgg16 --optimizer sgd --lr 0.1 --method adv --adv_eps 1
-```
-
-#### RMP
-
-```bash
-python main.py --dataset cifar10 --model vgg16 --optimizer sgd --lr 0.1 --method rmp --epsilon 0.1
-```
-
-#### AMP
-
-```bash
-python main.py --dataset cifar10 --model vgg16 --optimizer sgd --lr 0.1 --method amp --epsilon 0.1 --inner_lr 0.2 --inner_iter 1
-```
-
-
-### How to run experiments for VGG16 on CIFAR-100
-
-#### ERM
-
-```bash
-python main.py --dataset cifar100 --model vgg16 --optimizer sgd --lr 0.1 --method base
-```
-
-#### Dropout
-
-```bash
-python main.py --dataset cifar100 --model vgg16 --optimizer sgd --lr 0.1 --method base --dropout 0.1
-```
-
-#### Label smoothing
-
-```bash
-python main.py --dataset cifar100 --model vgg16 --optimizer sgd --lr 0.1 --method base --smoothing 0.2
-```
-
-#### Flooding
-
-```bash
-python main.py --dataset cifar100 --model vgg16 --optimizer sgd --lr 0.1 --method base --flooding 0.02
-```
-
-#### MixUp
-
-```bash
-python main.py --dataset cifar100 --model vgg16 --optimizer sgd --lr 0.1 --method mixup --mixup_alpha 1.0 1.0
-```
-
-#### Adversarial Training
-
 ```bash
-python main.py --dataset cifar100 --model vgg16 --optimizer sgd --lr 0.1 --method adv --adv_eps 1
+python main.py --dataset [dataset] --model [architecture] --method amp --epsilon [epsilon] --inner_lr [inner_lr] --inner_iter [inner_iter] --cutout
 ```
-#### RMP
 
-```bash
-python main.py --dataset cifar100 --model vgg16 --optimizer sgd --lr 0.1 --method rmp --epsilon 0.1
-```
-
-#### AMP
-
-```bash
-python main.py --dataset cifar100 --model vgg16 --optimizer sgd --lr 0.1 --method amp --epsilon 0.1 --inner_lr 0.2 --inner_iter 1
-```
-
-## Use data augmentation
-
-### How to run experiments for WideResNet-28-10 on SVHN with vanilla augmentation
-
-#### ERM
-
-```bash
-python main.py --dataset svhn --model wrn28_10 --optimizer sgd --lr 0.1 --method base
-```
-
-#### AMP
-
-```bash
-python main.py --dataset svhn --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.5 --inner_lr 1 --inner_iter 1
-```
-
-### How to run experiments for WideResNet-28-10 on SVHN with Cutout augmentation
-
-#### ERM
-
-```bash
-python main.py --dataset svhn --model wrn28_10 --optimizer sgd --lr 0.1 --method base --cutout
-```
-
-#### AMP
-
-```bash
-python main.py --dataset svhn --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.3 --inner_lr 0.5 --inner_iter 1 --cutout
-```
-
-### How to run experiments for WideResNet-28-10 on SVHN with AutoAugment augmentation
-
-#### ERM
-
-```bash
-python main.py --dataset svhn --model wrn28_10 --optimizer sgd --lr 0.1 --method base --autoaug
-```
-
-#### AMP
-
-```bash
-python main.py --dataset svhn --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.1 --inner_lr 0.1 --inner_iter 1 --autoaug
-```
-
-### How to run experiments for WideResNet-28-10 on CIFAR-10 with vanilla augmentation
-
-#### ERM
-
-```bash
-python main.py --dataset cifar10 --model wrn28_10 --optimizer sgd --lr 0.1 --method base
-```
-
-#### AMP
-
-```bash
-python main.py --dataset cifar10 --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.5 --inner_lr 1 --inner_iter 1
-```
-
-### How to run experiments for WideResNet-28-10 on CIFAR-10 with Cutout augmentation
-
-#### ERM
-
-```bash
-python main.py --dataset cifar10 --model wrn28_10 --optimizer sgd --lr 0.1 --method base --cutout
-```
-
-#### AMP
-
-```bash
-python main.py --dataset cifar10 --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.3 --inner_lr 0.5 --inner_iter 1 --cutout
-```
-
-### How to run experiments for WideResNet-28-10 on CIFAR-10 with AutoAugment augmentation
-
-#### ERM
-
-```bash
-python main.py --dataset cifar10 --model wrn28_10 --optimizer sgd --lr 0.1 --method base --autoaug
-```
-
-#### AMP
-
-```bash
-python main.py --dataset cifar10 --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.1 --inner_lr 0.1 --inner_iter 1 --autoaug
-```
-
-### How to run experiments for WideResNet-28-10 on CIFAR-100 with vanilla augmentation
-
-#### ERM
-
-```bash
-python main.py --dataset cifar100 --model wrn28_10 --optimizer sgd --lr 0.1 --method base
-```
-
-#### AMP
-
-```bash
-python main.py --dataset cifar100 --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.5 --inner_lr 1 --inner_iter 1
-```
-
-### How to run experiments for WideResNet-28-10 on CIFAR-100 with Cutout augmentation
-
-#### ERM
-
-```bash
-python main.py --dataset cifar100 --model wrn28_10 --optimizer sgd --lr 0.1 --method base --cutout
-```
-
-#### AMP
-
-```bash
-python main.py --dataset cifar100 --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.3 --inner_lr 0.5 --inner_iter 1 --cutout
-```
-
-### How to run experiments for WideResNet-28-10 on CIFAR-100 with AutoAugment augmentation
-
-#### ERM
-
-```bash
-python main.py --dataset cifar100 --model wrn28_10 --optimizer sgd --lr 0.1 --method base --autoaug
-```
-
-#### AMP
-
-```bash
-python main.py --dataset cifar100 --model wrn28_10 --optimizer sgd --lr 0.1 --method amp --epsilon 0.1 --inner_lr 0.1 --inner_iter 1 --autoaug
-```
-
-### How to run experiments for PyramidNet-164-270 on SVHN with vanilla augmentation
-
-#### ERM
-
-```bash
-python main.py --dataset svhn --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base
-```
-
-#### AMP
-
-```bash
-python main.py --dataset svhn --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.5 --inner_lr 1 --inner_iter 1
-```
-
-### How to run experiments for PyramidNet-164-270 on SVHN with Cutout augmentation
-
-#### ERM
-
-```bash
-python main.py --dataset svhn --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base --cutout
-```
-
-#### AMP
-
-```bash
-python main.py --dataset svhn --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.3 --inner_lr 0.5 --inner_iter 1 --cutout
-```
-
-### How to run experiments for PyramidNet-164-270 on SVHN with AutoAugment augmentation
-
-#### ERM
-
-```bash
-python main.py --dataset svhn --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base --autoaug
-```
-
-#### AMP
-
-```bash
-python main.py --dataset svhn --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.1 --inner_lr 0.1 --inner_iter 1 --autoaug
-```
+#### AMP with AutoAugment
 
-### How to run experiments for PyramidNet-164-270 on CIFAR-10 with vanilla augmentation
-
-#### ERM
-
-```bash
-python main.py --dataset cifar10 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base
-```
-
-#### AMP
-
-```bash
-python main.py --dataset cifar10 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.5 --inner_lr 1 --inner_iter 1
-```
-
-### How to run experiments for PyramidNet-164-270 on CIFAR-10 with Cutout augmentation
-
-#### ERM
-
-```bash
-python main.py --dataset cifar10 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base --cutout
-```
-
-#### AMP
-
-```bash
-python main.py --dataset cifar10 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.3 --inner_lr 0.5 --inner_iter 1 --cutout
-```
-
-### How to run experiments for PyramidNet-164-270 on CIFAR-10 with AutoAugment augmentation
-
-#### ERM
-
-```bash
-python main.py --dataset cifar10 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base --autoaug
-```
-
-#### AMP
-
-```bash
-python main.py --dataset cifar10 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.1 --inner_lr 0.1 --inner_iter 1 --autoaug
-```
-
-### How to run experiments for PyramidNet-164-270 on CIFAR-100 with vanilla augmentation
-
-#### ERM
-
 ```bash
-python main.py --dataset cifar100 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base
+python main.py --dataset [dataset] --model [architecture] --method amp --epsilon [epsilon] --inner_lr [inner_lr] --inner_iter [inner_iter] --autoaug
 ```
 
-#### AMP
+## File Specifications
 
-```bash
-python main.py --dataset cifar100 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.5 --inner_lr 1 --inner_iter 1
-```
+- **models**: Description for popular model architectures.
+- **attacks.py**: Used functions for adversarial training.
+- **data_utils.py**: Used functions for data preprocessing.
+- **loss_func.py**: Loss function for optimizing the models.
+- **main.py**: Scripts for training the models.
+- **trainer.py**: Implementation for different regularization schemes.
 
-### How to run experiments for PyramidNet-164-270 on CIFAR-100 with Cutout augmentation
+## Citation
 
-#### ERM
+If this work is helpful, please cite as:
 
-```bash
-python main.py --dataset cifar100 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base --cutout
+```bibtex
+@inproceedings{zheng2020regularizing,
+  title={Regularizing Neural Networks via Adversarial Model Perturbation},
+  author={Zheng, Yaowei and Zhang, Richong and Mao, Yongyi},
+  booktitle={{CVPR}},
+  year={2021}
+}
 ```
 
-#### AMP
-
-```bash
-python main.py --dataset cifar100 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.3 --inner_lr 0.5 --inner_iter 1 --cutout
-```
+## Acknowledgements
 
-### How to run experiments for PyramidNet-164-270 on CIFAR-100 with AutoAugment augmentation
+This work is supported partly by the National Key Research and Development Program of China, by the National Natural Science Foundation of China, by the Beijing Advanced Innovation Center for Big Data and Brain Computing (BDBC), by the Fundamental Research Funds for the Central Universities, by the Beijing S&T Committee and by the State Key Laboratory of Software Development Environment. The authors specially thank Linfang Hou for helpful discussions.
 
-#### ERM
+## Contact
 
-```bash
-python main.py --dataset cifar100 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method base --autoaug
-```
+hiyouga [AT] buaa [DOT] edu [DOT] cn
 
-#### AMP
+## License
 
-```bash
-python main.py --dataset cifar100 --model pyramidnet164_270 --optimizer sgd --lr 0.1 --method amp --epsilon 0.1 --inner_lr 0.1 --inner_iter 1 --autoaug
-```
+MIT
