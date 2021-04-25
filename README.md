@@ -31,10 +31,10 @@ Effective regularization techniques are highly desired in deep learning for alle
 ### Clone
 
 ```bash
-git clone https://github.com/**/***.git
+git clone https://github.com/hiyouga/AMP-Regularizer.git
 ```
 
-### Create an anaconda environment [Optional]:
+### Create an anaconda environment:
 
 ```bash
 conda create -n amp python=3.7
@@ -108,7 +108,7 @@ python main.py --dataset [dataset] --model [architecture] --method amp --epsilon
 
 ## File Specifications
 
-- **models**: Description for popular model architectures.
+- **models**: Description for several model architectures.
 - **attacks.py**: Used functions for adversarial training.
 - **data_utils.py**: Used functions for data preprocessing.
 - **loss_func.py**: Loss function for optimizing the models.
