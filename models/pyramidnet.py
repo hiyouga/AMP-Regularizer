@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-from .utils import mixup_process
 
 
 class BasicBlock(nn.Module):
@@ -80,7 +79,7 @@ class Bottleneck(nn.Module):
 
 class PyramidNet(nn.Module):
 
-    def __init__(self, depth, alpha, bottleneck, num_classes, scales, dropout):
+    def __init__(self, depth, alpha, bottleneck, num_classes, dropout):
         super(PyramidNet, self).__init__()
         self.in_channels = 16
         self.out_channels = 16
@@ -106,7 +105,6 @@ class PyramidNet(nn.Module):
             nn.Dropout(dropout),
             nn.Linear(self.in_channels, num_classes)
         )
-
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
@@ -115,23 +113,6 @@ class PyramidNet(nn.Module):
                 nn.init.zeros_(m.bias)
             elif isinstance(m, nn.Linear):
                 nn.init.zeros_(m.bias)
-
-        self.original_params = nn.ParameterDict()
-        self.perturb_params = nn.ParameterDict()
-        self.perturb_modules = nn.ModuleDict({
-            'conv1': self.conv1,
-            'layer1': self.layer1,
-            'layer2': self.layer2,
-            'layer3': self.layer3,
-            'classifier': self.classifier
-        })
-        self.perturb_scale = {
-            'conv1': scales[0],
-            'layer1': scales[1],
-            'layer2': scales[2],
-            'layer3': scales[3],
-            'classifier': scales[4]
-        }
 
     def _make_layer(self, block, block_depth, stride, dropout):
         layers = []
@@ -144,9 +125,7 @@ class PyramidNet(nn.Module):
         self.in_channels = int(round(self.out_channels)) * block.expansion
         return nn.Sequential(*layers)
 
-    def forward(self, x, lamda=None, indices=None):
-        if lamda is not None:
-            x = mixup_process(x, lamda, indices)
+    def forward(self, x):
         out = self.conv1(x)
         out = self.layer1(out)
         out = self.layer2(out)
@@ -155,21 +134,21 @@ class PyramidNet(nn.Module):
         return out
 
 
-def pyramidnet110_48(num_classes=10, dropout=0, scales=[1,1,1,1,1]):
-    return PyramidNet(110, 48, False, num_classes, scales, dropout)
+def pyramidnet110_48(num_classes=10, dropout=0):
+    return PyramidNet(110, 48, False, num_classes, dropout)
 
 
-def pyramidnet110_84(num_classes=10, dropout=0, scales=[1,1,1,1,1]):
-    return PyramidNet(110, 84, False, num_classes, scales, dropout)
+def pyramidnet110_84(num_classes=10, dropout=0):
+    return PyramidNet(110, 84, False, num_classes, dropout)
 
 
-def pyramidnet110_270(num_classes=10, dropout=0, scales=[1,1,1,1,1]):
-    return PyramidNet(110, 270, False, num_classes, scales, dropout)
+def pyramidnet110_270(num_classes=10, dropout=0):
+    return PyramidNet(110, 270, False, num_classes, dropout)
 
 
-def pyramidnet164_48(num_classes=10, dropout=0, scales=[1,1,1,1,1]):
-    return PyramidNet(164, 48, True, num_classes, scales, dropout)
+def pyramidnet164_48(num_classes=10, dropout=0):
+    return PyramidNet(164, 48, True, num_classes, dropout)
 
 
-def pyramidnet164_270(num_classes=10, dropout=0, scales=[1,1,1,1,1]):
-    return PyramidNet(164, 270, True, num_classes, scales, dropout)
+def pyramidnet164_270(num_classes=10, dropout=0):
+    return PyramidNet(164, 270, True, num_classes, dropout)

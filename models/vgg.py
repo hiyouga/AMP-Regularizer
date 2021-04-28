@@ -1,5 +1,4 @@
 import torch.nn as nn
-from .utils import mixup_process
 
 
 cfg = {
@@ -35,7 +34,7 @@ cfg = {
 
 
 class VGG(nn.Module):
-    def __init__(self, vgg_name, num_classes, scales, dropout):
+    def __init__(self, vgg_name, num_classes, dropout):
         super(VGG, self).__init__()
         self.init_channels = 3
         self.layer1 = self._make_layers(cfg[vgg_name][0], dropout)
@@ -53,7 +52,6 @@ class VGG(nn.Module):
             nn.Dropout(dropout),
             nn.Linear(4096, num_classes)
         )
-
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
@@ -62,25 +60,6 @@ class VGG(nn.Module):
                 nn.init.zeros_(m.bias)
             elif isinstance(m, nn.Linear):
                 nn.init.zeros_(m.bias)
-
-        self.original_params = nn.ParameterDict()
-        self.perturb_params = nn.ParameterDict()
-        self.perturb_modules = nn.ModuleDict({
-            'layer1': self.layer1,
-            'layer2': self.layer2,
-            'layer3': self.layer3,
-            'layer4': self.layer4,
-            'layer5': self.layer5,
-            'classifier': self.classifier
-        })
-        self.perturb_scale = {
-            'layer1': scales[0],
-            'layer2': scales[1],
-            'layer3': scales[2],
-            'layer4': scales[3],
-            'layer5': scales[4],
-            'classifier': scales[5]
-        }
 
     def _make_layers(self, cfg, dropout):
         layers = []
@@ -95,9 +74,7 @@ class VGG(nn.Module):
                 self.init_channels = x
         return nn.Sequential(*layers)
 
-    def forward(self, x, lamda=None, indices=None):
-        if lamda is not None:
-            x = mixup_process(x, lamda, indices)
+    def forward(self, x):
         out = self.layer1(x)
         out = self.layer2(out)
         out = self.layer3(out)
@@ -107,17 +84,17 @@ class VGG(nn.Module):
         return out
 
 
-def vgg11(num_classes=10, dropout=0, scales=[1,1,1,1,1,1]):
-    return VGG('VGG11', num_classes, scales, dropout)
+def vgg11(num_classes=10, dropout=0):
+    return VGG('VGG11', num_classes, dropout)
 
 
-def vgg13(num_classes=10, dropout=0, scales=[1,1,1,1,1,1]):
-    return VGG('VGG13', num_classes, scales, dropout)
+def vgg13(num_classes=10, dropout=0):
+    return VGG('VGG13', num_classes, dropout)
 
 
-def vgg16(num_classes=10, dropout=0, scales=[1,1,1,1,1,1]):
-    return VGG('VGG16', num_classes, scales, dropout)
+def vgg16(num_classes=10, dropout=0):
+    return VGG('VGG16', num_classes, dropout)
 
 
-def vgg19(num_classes=10, dropout=0, scales=[1,1,1,1,1,1]):
-    return VGG('VGG19', num_classes, scales, dropout)
+def vgg19(num_classes=10, dropout=0):
+    return VGG('VGG19', num_classes, dropout)

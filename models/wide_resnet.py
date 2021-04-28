@@ -1,5 +1,4 @@
 import torch.nn as nn
-from .utils import mixup_process
 
 
 class Wide_Basic(nn.Module):
@@ -28,16 +27,13 @@ class Wide_Basic(nn.Module):
 
 class Wide_ResNet(nn.Module):
 
-    def __init__(self, depth, widen_factor, num_classes, scales, dropout):
+    def __init__(self, depth, widen_factor, num_classes, dropout):
         super(Wide_ResNet, self).__init__()
-
-        self.in_channels = 16
-
         assert ((depth-4)%6==0), 'Wide-resnet depth should be 6n+4'
         n = int((depth-4)/6)
         k = widen_factor
         nStages = [16, 16*k, 32*k, 64*k]
-
+        self.in_channels = 16
         self.conv1 = nn.Conv2d(3, nStages[0], kernel_size=3, stride=1, padding=1, bias=False)
         self.layer1 = self._wide_layer(Wide_Basic, nStages[1], n, 1, dropout)
         self.layer2 = self._wide_layer(Wide_Basic, nStages[2], n, 2, dropout)
@@ -50,7 +46,6 @@ class Wide_ResNet(nn.Module):
             nn.Dropout(dropout),
             nn.Linear(nStages[3], num_classes)
         )
-
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
@@ -60,23 +55,6 @@ class Wide_ResNet(nn.Module):
             elif isinstance(m, nn.Linear):
                 nn.init.zeros_(m.bias)
 
-        self.original_params = nn.ParameterDict()
-        self.perturb_params = nn.ParameterDict()
-        self.perturb_modules = nn.ModuleDict({
-            'conv1': self.conv1,
-            'layer1': self.layer1,
-            'layer2': self.layer2,
-            'layer3': self.layer3,
-            'classifier': self.classifier
-        })
-        self.perturb_scale = {
-            'conv1': scales[0],
-            'layer1': scales[1],
-            'layer2': scales[2],
-            'layer3': scales[3],
-            'classifier': scales[4]
-        }
-
     def _wide_layer(self, block, out_channels, num_blocks, stride, dropout):
         strides = [stride] + [1] * (num_blocks-1)
         layers = []
@@ -85,9 +63,7 @@ class Wide_ResNet(nn.Module):
             self.in_channels = out_channels
         return nn.Sequential(*layers)
 
-    def forward(self, x, lamda=None, indices=None):
-        if lamda is not None:
-            x = mixup_process(x, lamda, indices)
+    def forward(self, x):
         out = self.conv1(x)
         out = self.layer1(out)
         out = self.layer2(out)
@@ -96,9 +72,9 @@ class Wide_ResNet(nn.Module):
         return out
 
 
-def wrn28_10(num_classes=10, dropout=0, scales=[1,1,1,1,1]):
-    return Wide_ResNet(28, 10, num_classes, scales, dropout)
+def wrn28_10(num_classes=10, dropout=0):
+    return Wide_ResNet(28, 10, num_classes, dropout)
 
 
-def wrn28_2(num_classes=10, dropout=0, scales=[1,1,1,1,1]):
-    return Wide_ResNet(28, 2, num_classes, scales, dropout)
+def wrn28_2(num_classes=10, dropout=0):
+    return Wide_ResNet(28, 2, num_classes, dropout)

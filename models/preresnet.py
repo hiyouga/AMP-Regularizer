@@ -1,5 +1,4 @@
 import torch.nn as nn
-from .utils import mixup_process
 
 
 class PreActBlock(nn.Module):
@@ -69,9 +68,8 @@ class PreActBottleneck(nn.Module):
 
 class PreActResNet(nn.Module):
 
-    def __init__(self, block, num_blocks, num_classes, scales, dropout):
+    def __init__(self, block, num_blocks, num_classes, dropout):
         super(PreActResNet, self).__init__()
-
         self.init_channels = 64
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
         self.layer1 = self._make_layer(block, 64, num_blocks[0], 1, dropout)
@@ -86,7 +84,6 @@ class PreActResNet(nn.Module):
             nn.Dropout(dropout),
             nn.Linear(512 * block.expansion, num_classes)
         )
-
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
@@ -96,25 +93,6 @@ class PreActResNet(nn.Module):
             elif isinstance(m, nn.Linear):
                 nn.init.zeros_(m.bias)
 
-        self.original_params = nn.ParameterDict()
-        self.perturb_params = nn.ParameterDict()
-        self.perturb_modules = nn.ModuleDict({
-            'conv1': self.conv1,
-            'layer1': self.layer1,
-            'layer2': self.layer2,
-            'layer3': self.layer3,
-            'layer4': self.layer4,
-            'classifier': self.classifier
-        })
-        self.perturb_scale = {
-            'conv1': scales[0],
-            'layer1': scales[1],
-            'layer2': scales[2],
-            'layer3': scales[3],
-            'layer4': scales[4],
-            'classifier': scales[5]
-        }
-
     def _make_layer(self, block, out_channels, num_blocks, stride, dropout):
         strides = [stride] + [1] * (num_blocks-1)
         layers = []
@@ -123,9 +101,7 @@ class PreActResNet(nn.Module):
             self.init_channels = out_channels * block.expansion
         return nn.Sequential(*layers)
 
-    def forward(self, x, lamda=None, indices=None):
-        if lamda is not None:
-            x = mixup_process(x, lamda, indices)
+    def forward(self, x):
         out = self.conv1(x)
         out = self.layer1(out)
         out = self.layer2(out)
@@ -135,21 +111,21 @@ class PreActResNet(nn.Module):
         return out
 
 
-def preactresnet18(num_classes=10, dropout=0, scales=[1,1,1,1,1,1]):
-    return PreActResNet(PreActBlock, [2,2,2,2], num_classes, scales, dropout)
+def preactresnet18(num_classes=10, dropout=0):
+    return PreActResNet(PreActBlock, [2,2,2,2], num_classes, dropout)
 
 
-def preactresnet34(num_classes=10, dropout=0, scales=[1,1,1,1,1,1]):
-    return PreActResNet(PreActBlock, [3,4,6,3], num_classes, scales, dropout)
+def preactresnet34(num_classes=10, dropout=0):
+    return PreActResNet(PreActBlock, [3,4,6,3], num_classes, dropout)
 
 
-def preactresnet50(num_classes=10, dropout=0, scales=[1,1,1,1,1,1]):
-    return PreActResNet(PreActBottleneck, [3,4,6,3], num_classes, scales, dropout)
+def preactresnet50(num_classes=10, dropout=0):
+    return PreActResNet(PreActBottleneck, [3,4,6,3], num_classes, dropout)
 
 
-def preactresnet101(num_classes=10, dropout=0, scales=[1,1,1,1,1,1]):
-    return PreActResNet(PreActBottleneck, [3,4,23,3], num_classes, scales, dropout)
+def preactresnet101(num_classes=10, dropout=0):
+    return PreActResNet(PreActBottleneck, [3,4,23,3], num_classes, dropout)
 
 
-def preactresnet152(num_classes=10, dropout=0, scales=[1,1,1,1,1,1]):
-    return PreActResNet(PreActBottleneck, [3,8,36,3], num_classes, scales, dropout)
+def preactresnet152(num_classes=10, dropout=0):
+    return PreActResNet(PreActBottleneck, [3,8,36,3], num_classes, dropout)

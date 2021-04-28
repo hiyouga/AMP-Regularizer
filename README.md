@@ -44,76 +44,25 @@ pip install -r requirements.txt
 
 ## Usage
 
-### Training
+You can use AMP as a regular optimizer with a `closure` function.
 
-#### ERM
-
-```bash
-python main.py --dataset [dataset] --model [architecture] --method base
-```
-
-#### Dropout
-
-```bash
-python main.py --dataset [dataset] --model [architecture] --method base --dropout [drop_rate]
-```
-
-#### Label smoothing
-
-```bash
-python main.py --dataset [dataset] --model [architecture] --method base --smoothing [smoothing_coefficient]
-```
-
-#### Flooding
-
-```bash
-python main.py --dataset [dataset] --model [architecture] --method base --flooding [flood_level]
-```
-
-#### MixUp
-
-```bash
-python main.py --dataset [dataset] --model [architecture] --method mixup --mixup_alpha [mixup_alpha] [mixup_alpha]
-```
-
-#### Adversarial Training
-
-```bash
-python main.py --dataset [dataset] --model [architecture] --method adv --adv_eps [adv_eps] --adv_iter [adv_iter]
-```
-
-#### RMP
-
-```bash
-python main.py --dataset [dataset] --model [architecture] --method rmp --epsilon [epsilon]
-```
-
-#### AMP
-
-```bash
-python main.py --dataset [dataset] --model [architecture] --method amp --epsilon [epsilon] --inner_lr [inner_lr] --inner_iter [inner_iter]
-```
-
-#### AMP with Cutout
-
-```bash
-python main.py --dataset [dataset] --model [architecture] --method amp --epsilon [epsilon] --inner_lr [inner_lr] --inner_iter [inner_iter] --cutout
-```
-
-#### AMP with AutoAugment
-
-```bash
-python main.py --dataset [dataset] --model [architecture] --method amp --epsilon [epsilon] --inner_lr [inner_lr] --inner_iter [inner_iter] --autoaug
+```python
+from amp import AMP
+optimizer = AMP(model.parameters(), lr=0.1, eps=0.5, momentum=0.9)
+def closure():
+    outputs = self.model(inputs)
+    loss = criterion(outputs, targets)
+    loss.backward()
+    return outputs, loss
+optimizer.step(closure)
 ```
 
 ## File Specifications
 
 - **models**: Description for several model architectures.
-- **attacks.py**: Used functions for adversarial training.
 - **data_utils.py**: Used functions for data preprocessing.
-- **loss_func.py**: Loss function for optimizing the models.
 - **main.py**: Scripts for training the models.
-- **trainer.py**: Implementation for different regularization schemes.
+- **amp.py**: Implementation for adversarial model perturbation.
 
 ## Citation
 
