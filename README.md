@@ -67,7 +67,7 @@ python main.py --dataset cifar100 --model preactresnet18 --epsilon 0.5 --inner_l
 
 ## Documentation
 
-> #### **AMP(*params*, *lr*, *epsilon*, *inner_lr=1*, *inner_iter=1*, *base_optimizer=SGD*, *\*\*kwargs*)**
+> ### **AMP(*params*, *lr*, *epsilon*, *inner_lr=1*, *inner_iter=1*, *base_optimizer=SGD*, *\*\*kwargs*)**
 
 Implements adversarial model perturbation.
 
@@ -81,7 +81,7 @@ Implements adversarial model perturbation.
 | `base_optimizer` (*class, optional*) | basic optimizer class (*default: SGD*)                       |
 | `**kwargs`                           | keyword arguments passed to the `__init__` method of `base_optimizer` |
 
-> #### **AMP.step(*closure*)**
+> ### **AMP.step(*closure*)**
 
 Performs AMP optimization step. Noting that AMP requires a `closure` to perform a optimization step.
 
@@ -96,7 +96,7 @@ We conduct experiment on CIFAR-100 using WideResNet-28-10 with `epsilon=0.5` and
 | Optimizer            | Test error  |
 | -------------------- | ----------- |
 | SGD + momentum       | 19.17±0.270 |
-| SGD + momentum (AMP) | 17.33±0.110 |
+| SGD + momentum (AMP) | **17.33±0.110** |
 
 ## File Specifications
 
