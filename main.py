@@ -16,7 +16,7 @@ class Instructor:
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)
         self.logger.addHandler(logging.StreamHandler(sys.stdout))
-        self.logger.addHandler(logging.FileHandler(f"{args.dataset}_{args.model}_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')[2:]}.log"))
+        self.logger.addHandler(logging.FileHandler(args.log_name))
         self.logger.info(f"> creating model {args.model}")
         self.model = models.__dict__[args.model](num_classes=args.num_classes, dropout=args.dropout)
         self.model.to(args.device)
@@ -108,6 +108,7 @@ class Instructor:
             self.logger.info(f"[train] loss: {train_loss:.4f}, acc: {train_acc*100:.2f}, err: {100-train_acc*100:.2f}")
             self.logger.info(f"[test] loss: {test_loss:.4f}, acc: {test_acc*100:.2f}, err: {100-test_acc*100:.2f}")
         self.logger.info(f"best loss: {best_loss:.4f}, best acc: {best_acc*100:.2f}, best err: {100-best_acc*100:.2f}")
+        self.logger.info(f"log saved: {self.args.log_name}")
 
 
 if __name__ == '__main__':
@@ -136,6 +137,7 @@ if __name__ == '__main__':
     parser.add_argument('--device', type=str, default=None, choices=['cpu', 'cuda'], help='Device.')
     args = parser.parse_args()
     args.num_classes = num_classes[args.dataset]
+    args.log_name = f"{args.dataset}_{args.model}_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')[2:]}.log"
     args.device = torch.device(args.device) if args.device else torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     ins = Instructor(args)
     ins.run()
