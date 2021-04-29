@@ -48,7 +48,9 @@ You can use AMP as a regular optimizer with a `closure` function.
 
 ```python
 from amp import AMP
+
 optimizer = AMP(model.parameters(), lr=0.1, eps=0.5, momentum=0.9)
+
 for inputs, targets in dataset:
     def closure():
         optimizer.zero_grad()
@@ -56,6 +58,7 @@ for inputs, targets in dataset:
         loss = loss_fn(outputs, targets)
         loss.backward()
         return outputs, loss
+
     outputs, loss = optimizer.step(closure)
 ```
 
