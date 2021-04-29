@@ -7,6 +7,7 @@ from PIL import Image, ImageEnhance, ImageOps
 
 
 def load_data(batch_size, workers, dataset, data_target_dir, data_aug, cutout, autoaug):
+
     if dataset == 'cifar10':
         mean = [x / 255 for x in [125.3, 123.0, 113.9]]
         std = [x / 255 for x in [63.0, 62.1, 66.7]]
@@ -17,7 +18,7 @@ def load_data(batch_size, workers, dataset, data_target_dir, data_aug, cutout, a
         mean = [x / 255 for x in [109.9, 109.7, 113.8]]
         std = [x / 255 for x in [50.1, 50.6, 50.8]]
     else:
-        assert False, f"Unknow dataset : {dataset}"
+        raise ValueError(f"Unknow dataset : {dataset}")
 
     if data_aug:
         if dataset == 'svhn':
@@ -68,7 +69,8 @@ def load_data(batch_size, workers, dataset, data_target_dir, data_aug, cutout, a
     elif dataset == 'svhn':
         train_data = datasets.SVHN(data_target_dir, split='train', transform=train_transform, download=True)
         test_data = datasets.SVHN(data_target_dir, split='test', transform=test_transform, download=True)
-        assert False, 'Do not support dataset : {}'.format(dataset)
+    else:
+        raise ValueError(f"Do not support dataset : {dataset}")
 
     train_dataloader = DataLoader(train_data, batch_size=batch_size, shuffle=True, num_workers=workers, pin_memory=True)
     test_dataloader = DataLoader(test_data, batch_size=batch_size, shuffle=False, num_workers=workers, pin_memory=True)

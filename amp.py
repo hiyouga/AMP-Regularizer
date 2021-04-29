@@ -7,21 +7,24 @@ class AMP(Optimizer):
     Implements adversarial model perturbation.
 
     Args:
-        params (iterable): iterable of parameters
+        params (iterable): iterable of trainable parameters
         lr (float): learning rate for outer optimization
         epsilon (float): perturbation norm ball radius
         inner_lr (float, optional): learning rate for inner optimization (default: 1)
         inner_iter (int, optional): iteration number for inner optimization (default: 1)
-        base_optimizer (class, optional): base optimizer class (default: SGD)
+        base_optimizer (class, optional): basic optimizer class (default: SGD)
+        **kwargs: keyword arguments passed to the `__init__` method of `base_optimizer`
 
     Example:
         >>> optimizer = AMP(model.parameters(), lr=0.1, eps=0.5, momentum=0.9)
-        >>> def closure():
-                outputs = self.model(inputs)
-                loss = criterion(outputs, targets)
-                loss.backward()
-                return outputs, loss
-        >>> optimizer.step(closure)
+        >>> for inputs, targets in dataset:
+        >>>     def closure():
+        >>>         optimizer.zero_grad()
+        >>>         outputs = model(inputs)
+        >>>         loss = loss_fn(outputs, targets)
+        >>>         loss.backward()
+        >>>         return outputs, loss
+        >>>     outputs, loss = optimizer.step(closure)
     """
 
     def __init__(self, params, lr, epsilon, inner_lr=1, inner_iter=1, base_optimizer=SGD, **kwargs):
@@ -39,11 +42,9 @@ class AMP(Optimizer):
     @torch.no_grad()
     def step(self, closure=None):
         if closure is None:
-            raise ValueError("Adversarial model perturbation requires closure, but it was not provided")
+            raise ValueError('Adversarial model perturbation requires closure, but it was not provided')
         closure = torch.enable_grad()(closure)
-        self.zero_grad()
-        outputs, loss = closure()
-        outputs, loss = outputs.detach(), loss.detach()
+        outputs, loss = map(lambda x: x.detach(), closure())
         for i in range(self.defaults['inner_iter']):
             for group in self.param_groups:
                 for p in group['params']:
@@ -55,7 +56,6 @@ class AMP(Optimizer):
                         dev = clip_coef * dev if clip_coef < 1 else dev
                         p.sub_(self.state[p]['dev']).add_(dev) # update "theta" with "theta+delta"
                         self.state[p]['dev'] = dev
-            self.zero_grad()
             closure()
         for group in self.param_groups:
             for p in group['params']:

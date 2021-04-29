@@ -4,7 +4,7 @@
 
 ![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/regularizing-neural-networks-via-adversarial/image-classification-on-svhn)
 
-Code for our CVPR 2021 paper "Regularizing Neural Networks via Adversarial Model Perturbation".
+A PyTorch implementation for our CVPR 2021 paper "Regularizing Neural Networks via Adversarial Model Perturbation".
 
 You can download the paper via: [[ArXiv]](https://arxiv.org/abs/2010.04925) [[PapersWithCode]](https://paperswithcode.com/paper/regularizing-neural-networks-via-adversarial).
 
@@ -20,11 +20,11 @@ Effective regularization techniques are highly desired in deep learning for alle
 
 ## Requirement
 
-- Python 3.7
-- Torch 1.6.0
-- TorchVision 0.7.0
-- NumPy 1.18.5
-- Pillow 6.1.0
+- Python >= 3.7
+- Torch >= 1.6.0
+- TorchVision >= 0.7.0
+- NumPy >= 1.18.5
+- Pillow >= 6.1.0
 
 ## Preparation
 
@@ -49,13 +49,54 @@ You can use AMP as a regular optimizer with a `closure` function.
 ```python
 from amp import AMP
 optimizer = AMP(model.parameters(), lr=0.1, eps=0.5, momentum=0.9)
-def closure():
-    outputs = self.model(inputs)
-    loss = criterion(outputs, targets)
-    loss.backward()
-    return outputs, loss
-optimizer.step(closure)
+for inputs, targets in dataset:
+    def closure():
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        loss = loss_fn(outputs, targets)
+        loss.backward()
+        return outputs, loss
+    outputs, loss = optimizer.step(closure)
 ```
+
+Run an example:
+
+```bash
+python main.py --dataset cifar100 --model preactresnet18 --epsilon 0.5 --inner_lr 1 --inner_iter 1
+```
+
+## Documentation
+
+> #### **AMP(*params*, *lr*, *epsilon*, *inner_lr=1*, *inner_iter=1*, *base_optimizer=SGD*, *\*\*kwargs*)**
+
+Implements adversarial model perturbation.
+
+| Argument                             | Description                                                  |
+| ------------------------------------ | ------------------------------------------------------------ |
+| `params` (*iterable*)                | iterable of trainable parameters                             |
+| `lr` (*float*)                       | learning rate for outer optimization                         |
+| `epsilon` (*float*)                  | perturbation norm ball radius                                |
+| `inner_lr` (*float, optional*)       | learning rate for inner optimization (*default: 1*)          |
+| `inner_iter` (*int, optional*)       | iteration number for inner optimization (*default: 1*)       |
+| `base_optimizer` (*class, optional*) | basic optimizer class (*default: SGD*)                       |
+| `**kwargs`                           | keyword arguments passed to the `__init__` method of `base_optimizer` |
+
+> #### **AMP.step(*closure*)**
+
+Performs AMP optimization step. Noting that AMP requires a `closure` to perform a optimization step.
+
+| Argument                         | Description                                                  |
+| -------------------------------- | ------------------------------------------------------------ |
+| `closure` (*callable, required*) | a closure-based function that does a full forward-backward pass on the optimized model |
+
+## Results
+
+We conduct experiment on CIFAR-100 using WideResNet-28-10 with `epsilon=0.5` and `inner_lr=1`. When we adopt `inner_iter=1`, AMP requires two gradient computation in each forward-backward pass. Thus it usually takes 1.8 times longer than ERM training.
+
+| Optimizer            | Test error  |
+| -------------------- | ----------- |
+| SGD + momentum       | 19.17±0.270 |
+| SGD + momentum (AMP) | 17.33±0.110 |
 
 ## File Specifications
 
