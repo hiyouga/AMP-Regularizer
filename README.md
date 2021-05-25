@@ -51,7 +51,7 @@ You can use AMP as a regular optimizer with a `closure` function.
 ```python
 from amp import AMP
 
-optimizer = AMP(model.parameters(), lr=0.1, eps=0.5, momentum=0.9)
+optimizer = AMP(model.parameters(), lr=0.1, epsilon=0.5, momentum=0.9)
 
 for inputs, targets in dataset:
     def closure():
