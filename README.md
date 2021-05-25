@@ -8,6 +8,8 @@ A PyTorch implementation for our CVPR 2021 paper "Regularizing Neural Networks v
 
 You can download the paper via: [[ArXiv]](https://arxiv.org/abs/2010.04925) [[PapersWithCode]](https://paperswithcode.com/paper/regularizing-neural-networks-via-adversarial).
 
+Poster and Slides can be found [here](https://github.com/hiyouga/AMP-Poster-Slides-LaTeX).
+
 ## One-Sentence Summary
 
 Adversarial Model Perturbation (AMP) effectively improves the generalization performance of deep models by minimizing an "AMP loss" that can find flat local minima via applying a "worst" norm-bounded perturbation on the model parameter.
